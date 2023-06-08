@@ -2,7 +2,6 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<p align="left">Welcome, {{ session['first_name'] }}</p>
   <h1 align="center">Notes</h1>
   <ul class="list-group list-group-flush" id="notes">
     {% for note in user.notes %}
