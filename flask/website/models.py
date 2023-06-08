@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
 
 class ClientData(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(150))
+    last_name = db.Column(db.String(150))
     location = db.Column(db.String(150))
     new_customer = db.Column(db.Boolean)
-    gallons_requested = db.Column(db.Integer)
-    profit_margin = db.Column(db.Integer)

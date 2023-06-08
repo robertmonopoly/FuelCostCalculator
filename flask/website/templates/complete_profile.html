@@ -1,0 +1,21 @@
+{% extends "base.html" %} 
+{% block title %}Complete Profile{% endblock %} 
+
+{% block content %}
+<h1 align="center">Complete Profile</h1>
+<form method="POST" action="{{ url_for('views.complete_profile') }}">
+  <label for="first_name">First Name:</label>
+  <input type="text" id="first_name" name="first_name" required><br><br>
+  
+  <label for="last_name">Last Name:</label>
+  <input type="text" id="last_name" name="last_name" required><br><br>
+  
+  <label for="location">Location:</label>
+  <input type="text" id="location" name="location" required><br><br>
+  
+  <label for="new_customer">New Customer:</label>
+  <input type="checkbox" id="new_customer" name="new_customer"><br><br>
+  
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}
