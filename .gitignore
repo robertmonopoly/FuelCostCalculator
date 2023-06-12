@@ -1,6 +1,9 @@
 *.pyo
 *.pyc
+*.db
 **/__pycache__
 **/venv
-*.db
+**/.venv
 **/instance
+**/.vscode
+**/.DS_Store
