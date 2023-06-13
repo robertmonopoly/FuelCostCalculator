@@ -16,9 +16,14 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     notes = db.relationship('Note')
 
-class ClientData(db.Model, UserMixin):
+class ProfileData(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(150))
-    last_name = db.Column(db.String(150))
-    location = db.Column(db.String(150))
-    new_customer = db.Column(db.Boolean)
+    full_name = db.Column(db.String(50))
+    address_1 = db.Column(db.String(100))
+    address_2 = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(2))
+    in_state_status = True
+    if state != "TX":
+        in_state_status = False
+    zip_code = db.db.Column(db.String(9))

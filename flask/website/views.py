@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from .models import Note
-from .models import ClientData
+from .models import ProfileData
 from . import db
 import json
 
@@ -40,13 +40,19 @@ def delete_note():
 @views.route('/complete_profile', methods=['GET', 'POST'])
 def complete_profile():
     if request.method == 'POST':
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        location = request.form['location']
-        new_customer = 'new_customer' in request.form
+        full_name = request.form['full_name']
+        address_1 = request.form['address_1']
+        address_2 = request.form['address_2']
+        city = request.form['city']
+        state = request.form['state']
+        zip_code = request.form['zip_code']
         
-        client_data = ClientData(first_name=first_name, last_name=last_name, location=location, new_customer=new_customer)
-        db.session.add(client_data)
+        profile_data = ProfileData(full_name=full_name, address_1=address_1,
+                                  address_2=address_2, 
+                                  city=city,
+                                  state=state,
+                                  zip_code=zip_code)
+        db.session.add(profile_data)
         db.session.commit()
         flash("Profile completed successfully!")
         
