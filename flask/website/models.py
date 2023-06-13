@@ -23,7 +23,18 @@ class ProfileData(db.Model, UserMixin):
     address_2 = db.Column(db.String(100))
     city = db.Column(db.String(100))
     state = db.Column(db.String(2))
-    in_state_status = True
-    if state != "TX":
-        in_state_status = False
+    in_state_status = db.Column(db.Boolean)
+    zip_code = db.Column(db.String(9))
+    new_customer_status = db.Column(db.Boolean)
+
+class FuelOrderFormData(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    gallons = db.Column(db.Integer)
+    delivery_date = db.Column(db.Date)
+    address_1 = db.Column(db.String(100))
+    address_2 = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    state = db.Column(db.Boolean)
     zip_code = db.db.Column(db.String(9))
+    in_state_status = db.Column(db.Boolean)
+    price = db.Column(db.Float)

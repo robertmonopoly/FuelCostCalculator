@@ -1,0 +1,16 @@
+{% extends "base.html" %} 
+{% block title %}Fuel Order Form{% endblock %} 
+
+{% block content %}
+<h1 align="center">Fuel Order Form</h1>
+<form method="POST" action="{{ url_for('views.fuel_price_form') }}">
+  
+  <label for="gallons_requested">Gallons Requested:</label>
+  <input type="number" id="gallons_requested" name="gallons_requested" required><br><br>
+  
+  <label for="delivery_date">Delivery Date:</label>
+  <input type="date" id="delivery_date" name="delivery_date" required><br><br>
+  
+  <input type="submit" value="Submit">
+</form>
+{% endblock %}

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, jsonify, redirect,
 from flask_login import login_required, current_user
 from .models import Note
 from .models import ProfileData
+from .models import FuelOrderFormData
 from . import db
 import json
 
@@ -46,12 +47,20 @@ def complete_profile():
         city = request.form['city']
         state = request.form['state']
         zip_code = request.form['zip_code']
+
+        in_state_status = True
+        if state != "TX":
+            in_state_status = False
+
+        new_customer_status = True    
         
         profile_data = ProfileData(full_name=full_name, address_1=address_1,
                                   address_2=address_2, 
                                   city=city,
                                   state=state,
-                                  zip_code=zip_code)
+                                  in_state_status=in_state_status,
+                                  zip_code=zip_code,
+                                  new_customer_status=new_customer_status)
         db.session.add(profile_data)
         db.session.commit()
         flash("Profile completed successfully!")
@@ -59,3 +68,50 @@ def complete_profile():
         return redirect(url_for('views.complete_profile', user=current_user))
     
     return render_template("complete_profile.html", user=current_user)
+
+@views.route('/fuel_price_form', methods=['GET', 'POST'])
+def fuel_price_form():
+    if request.method == 'POST':
+        gallons = request.form['gallons_requested']
+        delivery_date = request.form['delivery_date']
+        
+        if in_state_status == True:
+            location_fee = 5
+        else:
+            location_fee = 15
+        
+        if new_customer_status == True:
+            discount_rate = 0
+        else:
+            discount_rate = -0.20
+
+        company_profit_margin = ((-1.50 * gallons) + (3.36 * gallons)) / abs(((-1.50 * gallons) + (3.36 * gallons)))
+
+        if company_profit_margin == 0:
+            profit_fee = 1.00
+        elif company_profit_margin >= 1:
+            profit_fee = 0.50
+        else:
+            profit_fee = 2.00            
+
+        total_cost = (3.36 * gallons) + (gallons * location_fee) + (gallons * discount_rate) + (gallons * profit_fee)
+
+        
+        fuel_order_form_data = FuelOrderFormData(
+                                gallons=gallons,
+                                delivery_date=delivery_date,
+                                full_name=full_name, 
+                                address_1=address_1,
+                                address_2=address_2, 
+                                city=city,
+                                state=state,
+                                in_state_status=in_state_status,
+                                zip_code=zip_code,
+                                price=total_cost)
+        db.session.add(fuel_order_form_data)
+        db.session.commit()
+        flash("Fuel ordered successfully!")
+        
+        return redirect(url_for('views.fuel_price_form', user=current_user))
+    
+    return render_template("fuel_price_form.html", user=current_user)
