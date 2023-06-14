@@ -5,6 +5,7 @@ from .models import ProfileData
 from .models import FuelOrderFormData
 from . import db
 import json
+import datetime
 
 views = Blueprint('views', __name__)
 
@@ -71,16 +72,21 @@ def complete_profile():
 
 @views.route('/fuel_price_form', methods=['GET', 'POST'])
 def fuel_price_form():
+    price = None  # Initialize the price variable
+
     if request.method == 'POST':
-        gallons = request.form['gallons_requested']
+        gallons = float(request.form['gallons_requested'])  # Convert to float
         delivery_date = request.form['delivery_date']
         
-        if in_state_status == True:
+        delivery_date = datetime.datetime.strptime(delivery_date, '%Y-%m-%d').date()
+        profile_data = ProfileData.query.filter_by(id=current_user.id).first()
+        
+        if profile_data.in_state_status:
             location_fee = 5
         else:
             location_fee = 15
         
-        if new_customer_status == True:
+        if profile_data.new_customer_status:
             discount_rate = 0
         else:
             discount_rate = -0.20
@@ -94,24 +100,27 @@ def fuel_price_form():
         else:
             profit_fee = 2.00            
 
-        total_cost = (3.36 * gallons) + (gallons * location_fee) + (gallons * discount_rate) + (gallons * profit_fee)
+        price = (3.36 * gallons) + (gallons * location_fee) + (gallons * discount_rate) + (gallons * profit_fee)
+        print(price)
 
-        
         fuel_order_form_data = FuelOrderFormData(
-                                gallons=gallons,
-                                delivery_date=delivery_date,
-                                full_name=full_name, 
-                                address_1=address_1,
-                                address_2=address_2, 
-                                city=city,
-                                state=state,
-                                in_state_status=in_state_status,
-                                zip_code=zip_code,
-                                price=total_cost)
+            gallons=gallons,
+            delivery_date=delivery_date,
+            address_1=profile_data.address_1,
+            address_2=profile_data.address_2,
+            city=profile_data.city,
+            state=profile_data.state,
+            zip_code=profile_data.zip_code,
+            price=price,
+            user=current_user  # Assign the current user to the user attribute
+        )
+        
         db.session.add(fuel_order_form_data)
         db.session.commit()
         flash("Fuel ordered successfully!")
-        
-        return redirect(url_for('views.fuel_price_form', user=current_user))
+
+        return render_template("fuel_price_form.html", user=current_user, price=price)
     
-    return render_template("fuel_price_form.html", user=current_user)
+    return render_template("fuel_price_form.html", user=current_user, price=price)
+
+
