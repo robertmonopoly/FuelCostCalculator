@@ -70,6 +70,20 @@ def complete_profile():
     
     return render_template("complete_profile.html", user=current_user)
 
+
+
+@views.route('/view_history', methods=['GET', 'POST'])
+def view_history():
+    if request.method == 'POST':
+        
+        flash("Profile completed successfully!")
+        
+        return redirect(url_for('views.view_history', user=current_user))
+    
+    return render_template("view_history.html", user=current_user)
+
+
+
 @views.route('/fuel_price_form', methods=['GET', 'POST'])
 def fuel_price_form():
     price = None  # Initialize the price variable
@@ -122,5 +136,8 @@ def fuel_price_form():
         return render_template("fuel_price_form.html", user=current_user, price=price)
     
     return render_template("fuel_price_form.html", user=current_user, price=price)
+
+
+
 
 
