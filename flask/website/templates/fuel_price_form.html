@@ -21,11 +21,17 @@
   <p align="center">{{ address_1 }}</p>
 </div>
 {% endif %}
-<!-- <p align="center">{{ user }}</p> -->
+
+{% if address_1 and price is not none %}
+<div>
+  <h2 align="center">Suggested Price Per Gallon:</h2>
+  <p align="center">{{ price_per_gallon }}</p>
+</div>
+{% endif %}
 
 {% if price is not none %}
 <div>
-  <h2 align="center">Total Cost:</h2>
+  <h2 align="center">Total Amount Due:</h2>
   <p align="center">{{ price }}</p>
 </div>
 {% endif %}
