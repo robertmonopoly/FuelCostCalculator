@@ -131,9 +131,10 @@ def fuel_price_form():
         
         db.session.add(fuel_order_form_data)
         db.session.commit()
+        
         flash("Fuel ordered successfully!")
 
-        return render_template("fuel_price_form.html", user=current_user, price=price)
+        return render_template("fuel_price_form.html", user=current_user, price=price, address_1=profile_data.address_1)
     
     return render_template("fuel_price_form.html", user=current_user, price=price)
 

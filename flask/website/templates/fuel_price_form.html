@@ -14,6 +14,15 @@
   <input type="submit" value="Submit">
 </form>
 
+
+{% if address_1 and price is not none %}
+<div>
+  <h2 align="center">Delivery Address:</h2>
+  <p align="center">{{ address_1 }}</p>
+</div>
+{% endif %}
+<!-- <p align="center">{{ user }}</p> -->
+
 {% if price is not none %}
 <div>
   <h2 align="center">Total Cost:</h2>
