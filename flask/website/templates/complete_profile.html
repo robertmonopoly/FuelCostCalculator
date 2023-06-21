@@ -1,22 +1,20 @@
-{% extends "base.html" %} 
-{% block title %}Complete Profile{% endblock %} 
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Complete Profile{% endblock %} {%
+block content %}
 <h1 align="center">Complete Profile</h1>
 <form method="POST" action="{{ url_for('views.complete_profile') }}">
   <label for="full_name">Full Name:</label>
-  <input type="text" id="full_name" name="full_name" required><br><br>
-  
-  <label for="address_1">Address 1:</label>
-  <input type="text" id="address_1" name="address_1" required><br><br>
-  
-  <label for="address_2">Address 2:</label>
-  <input type="text" id="address_2" name="address_2"><br><br>
-  
-  <label for="city">City:</label>
-  <input type="text" id="city" name="city" required><br><br>
+  <input type="text" id="full_name" name="full_name" required /><br /><br />
 
-  <label for="state">State:</label><br>
+  <label for="address_1">Address 1:</label>
+  <input type="text" id="address_1" name="address_1" required /><br /><br />
+
+  <label for="address_2">Address 2:</label>
+  <input type="text" id="address_2" name="address_2" /><br /><br />
+
+  <label for="city">City:</label>
+  <input type="text" id="city" name="city" required /><br /><br />
+
+  <label for="state">State:</label><br />
   <select id="state" name="state" required>
     <option value="">-- Select State --</option>
     <option value="AL">Alabama</option>
@@ -68,12 +66,21 @@
     <option value="WA">Washington</option>
     <option value="WV">West Virginia</option>
     <option value="WI">Wisconsin</option>
-    <option value="WY">Wyoming</option>
-  </select><br><br>
-  
+    <option value="WY">Wyoming</option></select
+  ><br /><br />
+
   <label for="zip_code">Zip Code:</label>
-  <input type="text" id="zip_code" name="zip_code" pattern="[0-9]{5,9}" required><br><br>
-  
-  <input type="submit" value="Submit">
+  <input
+    type="text"
+    id="zip_code"
+    name="zip_code"
+    pattern="[0-9]{5,9}"
+    minlength="5"
+    maxlength="9"
+    required
+  /><br /><br />
+
+  <input type="submit" value="Submit" />
 </form>
+
 {% endblock %}
