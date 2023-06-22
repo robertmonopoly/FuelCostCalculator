@@ -9,7 +9,6 @@ import datetime
 
 views = Blueprint('views', __name__)
 
-
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
@@ -55,13 +54,15 @@ def complete_profile():
 
         new_customer_status = True    
         
-        profile_data = ProfileData(full_name=full_name, address_1=address_1,
-                                  address_2=address_2, 
-                                  city=city,
-                                  state=state,
-                                  in_state_status=in_state_status,
-                                  zip_code=zip_code,
-                                  new_customer_status=new_customer_status)
+        profile_data = ProfileData(id=current_user.id, 
+                                   full_name=full_name,
+                                   address_1=address_1,
+                                   address_2=address_2, 
+                                   city=city,
+                                   state=state,
+                                   in_state_status=in_state_status,
+                                   zip_code=zip_code,
+                                   new_customer_status=new_customer_status)
         db.session.add(profile_data)
         db.session.commit()
         flash("Profile completed successfully!")
@@ -72,15 +73,12 @@ def complete_profile():
 
 
 
-@views.route('/view_history', methods=['GET', 'POST'])
+@views.route('/view_history', methods=['GET'])
+@login_required
 def view_history():
-    if request.method == 'POST':
-        
-        flash("Profile completed successfully!")
-        
-        return redirect(url_for('views.view_history', user=current_user))
-    
-    return render_template("view_history.html", user=current_user)
+
+    orders = FuelOrderFormData.query.filter_by(user_id=current_user.id).all()
+    return render_template("view_history.html", user=current_user, orders = orders)
 
 
 

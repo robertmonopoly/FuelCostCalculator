@@ -1,9 +1,39 @@
-{% extends "base.html" %} 
-{% block title %}View History{% endblock %} 
+{% extends "base.html" %}
+{% block title %}View History{% endblock %}
 
 {% block content %}
-<h1 align="center">Fuel Order History</h1>
 
+<style>
+    .table th {
+        border-top: 0px;
+    }
+</style>
+<h1 style="text-align: center">Fuel Order History</h1>
 
+<div class="table-responsive">
+    <table class="table" style="color: white;">
+        <thead>
+            <tr>
+                <th scope="col">Order #</th>
+                <th scope="col">Delivery date</th>
+                <th scope="col">Gallons</th>
+                <th scope="col">Address</th>
+                <th scope="col">Price</th>
+            </tr>
+        </thead>
+        <tbody style="color: rgba(255,255,255,.75)"></tbody>
+        {% for order in orders %}
+        <tr>
+            <th scope="row">{{ order.id }}</th>
+            <th scope="row">{{ order.delivery_date }}</th>
+            <th scope="row">{{ order.gallons }}</th>
+            <th scope="row">{{ order.address_1 }} {{ order.city }}, {{ order.state }} {{ order.zip_code }}</th>
+            <th scope="row">${{ order.price }}</th>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}
