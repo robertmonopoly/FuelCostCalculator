@@ -25,7 +25,6 @@ def home():
 
     return render_template("home.html", user=current_user)
 
-
 @views.route('/delete-note', methods=['POST'])
 def delete_note():  
     note = json.loads(request.data) # this function expects a JSON from the INDEX.js file 
@@ -39,6 +38,7 @@ def delete_note():
     return jsonify({})
 
 @views.route('/complete_profile', methods=['GET', 'POST'])
+@login_required
 def complete_profile():
     if request.method == 'POST':
         full_name = request.form['full_name']
@@ -48,41 +48,36 @@ def complete_profile():
         state = request.form['state']
         zip_code = request.form['zip_code']
 
-        in_state_status = True
-        if state != "TX":
-            in_state_status = False
+        # TODO: these fields should be validated server-side
 
-        new_customer_status = True    
-        
-        profile_data = ProfileData(id=current_user.id, 
-                                   full_name=full_name,
-                                   address_1=address_1,
-                                   address_2=address_2, 
-                                   city=city,
-                                   state=state,
-                                   in_state_status=in_state_status,
-                                   zip_code=zip_code,
-                                   new_customer_status=new_customer_status)
-        db.session.add(profile_data)
+        in_state_status = (state == "TX")
+
+        profile_data = ProfileData.query.filter_by(id=current_user.id).first() 
+        if profile_data is None:
+            profile_data = ProfileData(id=current_user.id)
+            db.session.add(profile_data)
+        profile_data.full_name=full_name
+        profile_data.address_1=address_1
+        profile_data.address_2=address_2 
+        profile_data.city=city
+        profile_data.state=state
+        profile_data.in_state_status=in_state_status
+        profile_data.zip_code=zip_code
         db.session.commit()
         flash("Profile completed successfully!")
         
         return redirect(url_for('views.complete_profile', user=current_user))
-    
-    return render_template("complete_profile.html", user=current_user)
-
-
+    profile = ProfileData.query.filter_by(id=current_user.id).first()
+    return render_template("complete_profile.html", user=current_user, profile=profile)
 
 @views.route('/view_history', methods=['GET'])
 @login_required
 def view_history():
-
     orders = FuelOrderFormData.query.filter_by(user_id=current_user.id).all()
     return render_template("view_history.html", user=current_user, orders = orders)
 
-
-
 @views.route('/fuel_price_form', methods=['GET', 'POST'])
+@login_required
 def fuel_price_form():
     price = None  # Initialize the price variable
 
@@ -92,13 +87,15 @@ def fuel_price_form():
         
         delivery_date = datetime.datetime.strptime(delivery_date, '%Y-%m-%d').date()
         profile_data = ProfileData.query.filter_by(id=current_user.id).first()
+        # check if the customer has ordered fuel before
+        is_new_customer = db.session.query(FuelOrderFormData.query.filter(FuelOrderFormData.user_id ==current_user.id).exists()).scalar()
         
         if profile_data.in_state_status:
             location_fee = 5
         else:
             location_fee = 15
         
-        if profile_data.new_customer_status:
+        if is_new_customer:
             discount_rate = 0
         else:
             discount_rate = -0.20

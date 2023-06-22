@@ -23,7 +23,6 @@ class ProfileData(db.Model, UserMixin):
     state = db.Column(db.String(2))
     in_state_status = db.Column(db.Boolean)
     zip_code = db.Column(db.String(9))
-    new_customer_status = db.Column(db.Boolean)
 
 class FuelOrderFormData(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

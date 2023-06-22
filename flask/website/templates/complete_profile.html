@@ -1,18 +1,26 @@
 {% extends "base.html" %} {% block title %}Complete Profile{% endblock %} {%
 block content %}
 <h1 align="center">Complete Profile</h1>
+<script>
+  // workaround to show the user's previously selected state
+  let state = '{{ profile.state }}';
+  window.onload = function () {
+    document.getElementById("state").value = state;
+  }
+</script>
+
 <form method="POST" action="{{ url_for('views.complete_profile') }}">
   <label for="full_name">Full Name:</label>
-  <input type="text" id="full_name" name="full_name" required /><br /><br />
+  <input type="text" id="full_name" name="full_name" value="{{ profile.full_name }}" required /><br /><br />
 
   <label for="address_1">Address 1:</label>
-  <input type="text" id="address_1" name="address_1" required /><br /><br />
+  <input type="text" id="address_1" name="address_1" value="{{ profile.address_1 }}" required /><br /><br />
 
   <label for="address_2">Address 2:</label>
-  <input type="text" id="address_2" name="address_2" /><br /><br />
+  <input type="text" id="address_2" name="address_2" value="{{ profile.address_2 }}" /><br /><br />
 
   <label for="city">City:</label>
-  <input type="text" id="city" name="city" required /><br /><br />
+  <input type="text" id="city" name="city" value="{{ profile.city }}" required /><br /><br />
 
   <label for="state">State:</label><br />
   <select id="state" name="state" required>
@@ -66,19 +74,20 @@ block content %}
     <option value="WA">Washington</option>
     <option value="WV">West Virginia</option>
     <option value="WI">Wisconsin</option>
-    <option value="WY">Wyoming</option></select
-  ><br /><br />
+    <option value="WY">Wyoming</option>
+  </select><br /><br />
 
   <label for="zip_code">Zip Code:</label>
   <input
     type="text"
     id="zip_code"
     name="zip_code"
-    pattern="[0-9]{5,9}"
+    pattern="^(?:\d{5}|\d{9})$"
     minlength="5"
     maxlength="9"
-    required
-  /><br /><br />
+    value="{{ profile.zip_code }}"
+    required />
+  <br /><br />
 
   <input type="submit" value="Submit" />
 </form>
