@@ -40,6 +40,8 @@ def delete_note():
 @views.route('/complete_profile', methods=['GET', 'POST'])
 @login_required
 def complete_profile():
+    profile = ProfileData.query.filter_by(id=current_user.id).first()
+
     if request.method == 'POST':
         full_name = request.form['full_name']
         address_1 = request.form['address_1']
@@ -48,26 +50,28 @@ def complete_profile():
         state = request.form['state']
         zip_code = request.form['zip_code']
 
-        # TODO: these fields should be validated server-side
+        # TODO: Add server-side validation for the form fields
 
         in_state_status = (state == "TX")
 
-        profile_data = ProfileData.query.filter_by(id=current_user.id).first() 
-        if profile_data is None:
-            profile_data = ProfileData(id=current_user.id)
-            db.session.add(profile_data)
-        profile_data.full_name=full_name
-        profile_data.address_1=address_1
-        profile_data.address_2=address_2 
-        profile_data.city=city
-        profile_data.state=state
-        profile_data.in_state_status=in_state_status
-        profile_data.zip_code=zip_code
+        if profile is None:
+            profile = ProfileData(id=current_user.id)
+            db.session.add(profile)
+
+        profile.full_name = full_name
+        profile.address_1 = address_1
+        profile.address_2 = address_2
+        profile.city = city
+        profile.state = state
+        profile.in_state_status = in_state_status
+        profile.zip_code = zip_code
+        profile.profile_completed = True  # Set profile_completed to True
+
         db.session.commit()
         flash("Profile completed successfully!")
-        
-        return redirect(url_for('views.complete_profile', user=current_user))
-    profile = ProfileData.query.filter_by(id=current_user.id).first()
+
+        return redirect(url_for('views.complete_profile'))
+
     return render_template("complete_profile.html", user=current_user, profile=profile)
 
 @views.route('/view_history', methods=['GET'])
