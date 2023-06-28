@@ -3,20 +3,31 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h2 class="text-center">Welcome to Monopoly Bank</h2>
-  <div class="container">
-    <div class="jumbotron mt-5" style="background-color: transparent;">
-      <p>
-        Monopoly Bank is an investment bank that specializes in trading fuel. Our goal is to provide an innovative fuel purchasing service to our customers with incredible customer service.
-      </p>
-      <h3 class="mt-4">How to Buy Fuel:</h3>
-      <ol>
-        <li>Complete your profile by clicking on the "Complete Profile" tab in the navbar.</li>
-        <li>Upon completing your profile, the fuel order form and fuel quote history tabs on the navbar will become visible.</li>
-      </ol>
-      <p class="mt-4">
-        <strong>Note:</strong> The complete profile page cannot be accessed once it has been completed.
-      </p>
-    </div>
+
+<style>
+  /* Add this style block to modify the font */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+  .professional-font {
+    font-family: 'Roboto', sans-serif;
+    /* Add any other desired styles */
+  }
+</style>
+
+<div class="container">
+  <h2 class="text-center display-4 mb-5 professional-font">Welcome to <span class="text-primary">Monopoly Bank</span></h2>
+  <p class="lead text-center professional-font">
+    Monopoly Bank is an investment bank that specializes in trading fuel. Our mission is to revolutionize the fuel industry by providing an innovative fuel purchasing service, backed by exceptional customer service.
+  </p>
+  <div class="text-center mt-5">
+    <h3 class="mb-4 professional-font">How to Buy Fuel:</h3>
+    <ol class="text-left professional-font">
+      <li>Complete your profile by clicking on the "Complete Profile" tab in the navigation bar.</li>
+      <li>Once your profile is complete, the fuel order form and fuel quote history tabs will be unlocked in the navigation bar.</li>
+    </ol>
+    <p class="mt-4 professional-font">
+      <strong>Note:</strong> The Complete Profile page will be inaccessible once it has been completed.
+    </p>
   </div>
+</div>
 {% endblock %}

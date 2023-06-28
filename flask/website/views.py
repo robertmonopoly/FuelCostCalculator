@@ -34,7 +34,6 @@ def complete_profile():
         zip_code = request.form['zip_code']
 
         # TODO: Add server-side validation for the form fields
-
         in_state_status = (state == "TX")
 
         if profile is None:
@@ -79,27 +78,29 @@ def fuel_price_form():
         
         is_new_customer = FuelOrderFormData.query.filter_by(user_id=current_user.id).first() is None
 
+        current_price = 1.50
+        profit_factor = 0.10
+           
         if profile.in_state_status:
-            location_fee = 5
+            location_factor = 0.02
         else:
-            location_fee = 15
+            location_factor = 0.04
 
         if is_new_customer:
-            discount_rate = 0
+            history_factor = 0
         else:
-            discount_rate = -0.20
+            history_factor = 0.01
 
-        company_profit_margin = ((-1.50 * gallons) + (3.36 * gallons)) / abs(((-1.50 * gallons) + (3.36 * gallons)))
-
-        if company_profit_margin == 0:
-            profit_fee = 1.00
-        elif company_profit_margin >= 1:
-            profit_fee = 0.50
+        if gallons > 1000:
+            requested_factor = 0.02
         else:
-            profit_fee = 2.00
+            requested_factor = 0.03
 
-        price = (3.36 * gallons) + (gallons * location_fee) + (gallons * discount_rate) + (gallons * profit_fee)
-        price_per_gallon = 3.36 + location_fee + discount_rate + profit_fee
+        company_profit_margin = current_price * (location_factor - history_factor + requested_factor + profit_factor)
+
+
+        price_per_gallon = current_price + company_profit_margin
+        price = gallons * price_per_gallon
 
         fuel_order_form_data = FuelOrderFormData(
             gallons=gallons,
