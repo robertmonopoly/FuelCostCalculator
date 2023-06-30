@@ -1,40 +1,85 @@
-{% extends "base.html" %} 
-{% block title %}Fuel Order Form{% endblock %} 
+{% extends "base.html" %}
+{% block title %}Fuel Order Form{% endblock %}
 
 {% block content %}
+
+<style>
+  .required:after {
+    content: " *";
+    color: red;
+  }
+</style>
+
+{% if price == None %}
+
 <h1 align="center">Fuel Order Form</h1>
 <form method="POST" action="{{ url_for('views.fuel_price_form') }}">
-  
-  <label for="gallons_requested">Gallons Requested:</label>
-  <input type="number" id="gallons_requested" name="gallons_requested" required><br><br>
-  
-  <label for="delivery_date">Delivery Date:</label>
-  <input type="date" id="delivery_date" name="delivery_date" required><br><br>
-  
-  <input type="submit" value="Submit">
+  <div class="form-group">
+    <label class="form-label required" for="gallons_requested">Gallons Requested:</label>
+    <input class="form-control" type="number" id="gallons_requested" name="gallons_requested" min="1" required>
+  </div>
+
+  <div class="form-group">
+    <label>Delivery Address:</label>
+    <input class="form-control" type="text" value="{{ profile.address_1 }}" readonly>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label required" for="delivery_date">Delivery Date:</label>
+    <input class="form-control" type="date" id="delivery_date" name="delivery_date" required>
+  </div>
+
+  <div class="form-group">
+    <label>Suggested Price Per Gallon:</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">$</span>
+      </div>
+      <input class="form-control" value="{{ price_per_gallon if price_per_gallon != None else 'TBD' }}" readonly>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="delivery_date">Total Amount Due:</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">$</span>
+      </div>
+      <input class="form-control" value="{{ price if price != None else 'TBD'}}" readonly>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <button type="submit" class="btn btn-primary btn-block">Submit order</button>
+  </div>
 </form>
 
-
-{% if address_1 and price is not none %}
-<div>
-  <h2 align="center">Delivery Address:</h2>
-  <p align="center">{{ address_1 }}</p>
-</div>
 {% endif %}
 
-{% if address_1 and price is not none %}
-<div>
-  <h2 align="center">Suggested Price Per Gallon:</h2>
-  <p align="center">{{ price_per_gallon }}</p>
-</div>
-{% endif %}
+{% if price != None %}
 
-{% if price is not none %}
-<div>
-  <h2 align="center">Total Amount Due:</h2>
-  <p align="center">{{ price }}</p>
-</div>
-{% endif %}
+<div class="container text-center">
+  <h1 align="center">Fuel ordered successfully</h1>
+  <hr class="mt-2 mb-2">
+  <div>
+    <h2 align="center">Delivery Address:</h2>
+    <p align="center">{{ address_1 }}</p>
+  </div>
 
+  <div>
+    <h2 align="center">Suggested Price Per Gallon:</h2>
+    <p align="center">${{ price_per_gallon }}</p>
+  </div>
+
+  <div>
+    <h2 align="center">Total Amount Due:</h2>
+    <p align="center">${{ price }}</p>
+  </div>
+
+  <a href="/view_history" class="btn btn-primary" role="button">View My Orders</a>
+
+</div>
+
+{% endif %}
 
 {% endblock %}

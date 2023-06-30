@@ -1,10 +1,8 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Note
 from .models import ProfileData
 from .models import FuelOrderFormData
 from . import db
-import json
 import datetime
 
 views = Blueprint('views', __name__)
@@ -68,11 +66,16 @@ def view_history():
 @login_required
 def fuel_price_form():
     profile = ProfileData.query.filter_by(id=current_user.id).first()
-    price = None  # Initialize the price variable
 
     if request.method == 'POST':
+        price = None  # Initialize the price variable
         gallons = float(request.form['gallons_requested'])  # Convert to float
+        if gallons < 1:
+            flash("Gallons requested must be greater than 1!", category="error")
+            return render_template("fuel_price_form.html", user=current_user, profile=profile, price=price, price_per_gallon=None)
         delivery_date = request.form['delivery_date']
+
+        # TODO: throw error if delivery date is in the past
 
         delivery_date = datetime.datetime.strptime(delivery_date, '%Y-%m-%d').date()
         
@@ -117,8 +120,6 @@ def fuel_price_form():
         db.session.add(fuel_order_form_data)
         db.session.commit()
 
-        flash("Fuel ordered successfully!")
-
         return render_template(
             "fuel_price_form.html",
             user=current_user,
@@ -127,6 +128,5 @@ def fuel_price_form():
             address_1=profile.address_1,
             price_per_gallon=price_per_gallon
         )
-
-    return render_template("fuel_price_form.html", user=current_user, profile=profile, price=price)
+    return render_template("fuel_price_form.html", user=current_user, profile=profile, price=None, price_per_gallon=None)
 
