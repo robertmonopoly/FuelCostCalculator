@@ -1,0 +1,11 @@
+version: '3.4'
+services:
+  fuelcalculator:
+    image: fuel:latest
+    container_name: fuel
+    build: .
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./data:/srv/fuel/instance:z"
