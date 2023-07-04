@@ -2,7 +2,6 @@ import unittest
 from flask_testing import TestCase
 from datetime import datetime
 
-# I hate python
 import sys
 sys.path.append('../')
 

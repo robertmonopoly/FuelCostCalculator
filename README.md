@@ -19,12 +19,12 @@ python3 main.py
 
 ## Running Tests
 
-Unit tests are found in the `/tests` folder and can be run by executing the `tests.py` file
+Unit tests are found in the `/tests` folder and can be run by executing the `test.py` file
 ```
 python tests.py
 ```
 
 Coverage reports can be generated like so:
 ```
-coverage run tests.py && coverage report
+coverage run tests.py && coverage report -m
 ```
