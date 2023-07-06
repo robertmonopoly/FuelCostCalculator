@@ -76,6 +76,21 @@ class WebsiteTests(TestCase):
             self.assert_context('user', User.query.filter_by(id=1).first())
             self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
 
+    def test_fuel_price_form_post(self):
+        with self.client:
+            db.session.add(User(id = 1, username='test', password=testHash))
+            db.session.add(ProfileData(id=1))
+            db.session.commit()
+            self.client.post('login', data={'username': 'test', 'password': 'test'})
+            response = self.client.get('/fuel_price_form')
+            self.assert_status(response, 200)
+            self.assert_template_used('fuel_price_form.html')
+            self.assert_context('user', User.query.filter_by(id=1).first())
+            self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
+
+
+
+
     def test_history(self):
         with self.client:
             db.session.add(User(id = 1, username='test', password=testHash))
