@@ -88,17 +88,77 @@ class WebsiteTests(TestCase):
             self.assert_context('user', User.query.filter_by(id=1).first())
             self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
 
-    def test_sign_up(self):
+    def test_sign_up_matching_passwords(self):
         with self.client:
-            db.session.add(User(id = 1, username='test', password=testHash))
-            db.session.add(ProfileData(id=1))
-            db.session.commit()
-            self.client.post('login', data={'username': 'test', 'password': 'test'})
-            response = self.client.get('/sign_up')
-            self.assert_status(response, 200)
+            # Posting a request with matching passwords
+            self.client.post('/sign-up', data={
+            'username': 'test',
+            'password': 'test',
+            'confirm-password': 'test'
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
             self.assert_template_used('sign_up.html')
-            self.assert_context('user', User.query.filter_by(id=1).first())
-            self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
+
+            user = response.context['user']
+            profile = response.context['profile']
+
+            self.assertEqual(user, User.query.filter_by(id=1).first())
+            self.assertEqual(profile, ProfileData.query.filter_by(id=1).first())
+
+            # Posting a request with mismatching passwords
+            self.client.post('/sign-up', data={
+            'username': 'test2',
+            'password': 'password1',
+            'confirm-password': 'password2'
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
+            self.assert_template_used('sign_up.html')
+        
+            # Ensure the flash message is displayed
+        with self.client.session_transaction() as session:
+            flash_message = dict(session['_flashes'])['error']
+            self.assertEqual(flash_message, 'The supplied passwords do not match')
+
+
+    def test_sign_up_unique_usernames(self):
+        with self.client:
+        # Posting a request with a unique username
+            self.client.post('/sign-up', data={
+            'username': 'test',
+            'password': 'test',
+            'confirm-password': 'test'
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
+            self.assert_template_used('sign_up.html')
+
+            user = response.context['user']
+            profile = response.context['profile']
+
+            self.assertEqual(user, User.query.filter_by(id=1).first())
+            self.assertEqual(profile, ProfileData.query.filter_by(id=1).first())
+
+            # Posting a request with an existing username
+            existing_username = 'existing_user'
+            existing_user = User(username=existing_username, password='password')
+            db.session.add(existing_user)
+            db.session.commit()
+
+            self.client.post('/sign-up', data={
+            'username': existing_username,
+            'password': 'password123',
+            'confirm-password': 'password123'
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
+            self.assert_template_used('sign_up.html')
+        
+            # Ensure the flash message is displayed
+        with self.client.session_transaction() as session:
+            flash_message = dict(session['_flashes'])['error']
+            self.assertEqual(flash_message, 'A user already exists with that username')
 
 
     def test_history(self):
