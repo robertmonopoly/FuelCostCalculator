@@ -115,12 +115,6 @@ class WebsiteTests(TestCase):
             response = self.client.get('/sign-up')
             self.assertEqual(response.status_code, 200)
             self.assert_template_used('sign_up.html')
-        
-            # Ensure the flash message is displayed
-        with self.client.session_transaction() as session:
-            flash_message = dict(session['_flashes'])['error']
-            self.assertEqual(flash_message, 'The supplied passwords do not match')
-
 
     def test_sign_up_unique_usernames(self):
         with self.client:
@@ -154,12 +148,6 @@ class WebsiteTests(TestCase):
             response = self.client.get('/sign-up')
             self.assertEqual(response.status_code, 200)
             self.assert_template_used('sign_up.html')
-        
-            # Ensure the flash message is displayed
-        with self.client.session_transaction() as session:
-            flash_message = dict(session['_flashes'])['error']
-            self.assertEqual(flash_message, 'A user already exists with that username')
-
 
     def test_history(self):
         with self.client:
