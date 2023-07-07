@@ -88,7 +88,17 @@ class WebsiteTests(TestCase):
             self.assert_context('user', User.query.filter_by(id=1).first())
             self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
 
-
+    def test_sign_up(self):
+        with self.client:
+            db.session.add(User(id = 1, username='test', password=testHash))
+            db.session.add(ProfileData(id=1))
+            db.session.commit()
+            self.client.post('login', data={'username': 'test', 'password': 'test'})
+            response = self.client.get('/sign_up')
+            self.assert_status(response, 200)
+            self.assert_template_used('sign_up.html')
+            self.assert_context('user', User.query.filter_by(id=1).first())
+            self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
 
 
     def test_history(self):
