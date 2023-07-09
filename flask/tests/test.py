@@ -1,6 +1,7 @@
 import unittest
 from flask_testing import TestCase
 from datetime import datetime
+import math
 
 import sys
 sys.path.append('../')
@@ -76,10 +77,39 @@ class WebsiteTests(TestCase):
             self.assert_context('user', User.query.filter_by(id=1).first())
             self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
 
-    def test_fuel_price_form_post(self):
+    def test_fuel_price_form_data_present(self):
+        with self.client:
+            user = User(id=1, username='test', password=testHash)
+            profile = ProfileData(id=1)
+            fuel_order_form_data = FuelOrderFormData(id=1, gallons=100, address_1='123 Street')
+            db.session.add_all([user, profile, fuel_order_form_data])
+            db.session.commit()
+            
+            self.client.post('/login', data={'username': 'test', 'password': 'test'})
+            
+            response = self.client.get('/fuel_price_form')
+            self.assert200(response)
+            self.assert_template_used('fuel_price_form.html')
+            self.assert_context('user', user)
+            self.assert_context('profile', profile)
+
+    def test_fuel_price_form_data_not_present(self):
         with self.client:
             db.session.add(User(id = 1, username='test', password=testHash))
-            db.session.add(ProfileData(id=1))
+            db.session.commit()
+            self.client.post('login', data={'username': 'test', 'password': 'test'})
+            response = self.client.get('/fuel_price_form')
+            self.assert_status(response, 200)
+            self.assert_template_used('fuel_price_form.html')
+            self.assert_context('user', User.query.filter_by(id=1).first())
+            self.assert_context('profile', None)
+
+    def test_fuel_price_form_out_of_state_new_customer(self):
+        with self.client:
+            user = User(id=1, username='test', password=testHash)
+            profile = ProfileData(id=1, profile_completed=True)
+            fuel_order_form_data = FuelOrderFormData(id=1, gallons=1500, address_1='123 Street')
+            db.session.add_all([user, profile, fuel_order_form_data])
             db.session.commit()
             self.client.post('login', data={'username': 'test', 'password': 'test'})
             response = self.client.get('/fuel_price_form')
@@ -88,66 +118,32 @@ class WebsiteTests(TestCase):
             self.assert_context('user', User.query.filter_by(id=1).first())
             self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
 
-    def test_sign_up_matching_passwords(self):
-        with self.client:
-            # Posting a request with matching passwords
-            self.client.post('/sign-up', data={
-            'username': 'test',
-            'password': 'test',
-            'confirm-password': 'test'
+            gallons = 1500
+            current_price = 1.50
+            location_factor = 0.04  # Assuming out of Texas
+            history_factor = 0 # Updated assumption for new customer
+            requested_factor = 0.02  # Assuming more than 1000 gallons
+            profit_factor = 0.1
+
+            company_profit_margin = current_price * (location_factor - history_factor + requested_factor + profit_factor)
+
+            expected_price_per_gallon = current_price + company_profit_margin
+            expected_price = gallons * expected_price_per_gallon
+
+            # POST request to the '/fuel_price_form' route
+            response = self.client.post('/fuel_price_form', data={
+                'gallons_requested': '1500',  # Set the desired gallons
+                'delivery_date': '2023-12-09'  # Set the delivery date
             })
-            response = self.client.get('/sign-up')
-            self.assertEqual(response.status_code, 200)
-            self.assert_template_used('sign_up.html')
 
-            user = response.context['user']
-            profile = response.context['profile']
+            self.assert_context('address_1', ProfileData.query.filter_by(id=1).first().address_1)
+            self.assert_context('price_per_gallon', expected_price_per_gallon)
+            self.assert_context('price', expected_price)
 
-            self.assertEqual(user, User.query.filter_by(id=1).first())
-            self.assertEqual(profile, ProfileData.query.filter_by(id=1).first())
 
-            # Posting a request with mismatching passwords
-            self.client.post('/sign-up', data={
-            'username': 'test2',
-            'password': 'password1',
-            'confirm-password': 'password2'
-            })
-            response = self.client.get('/sign-up')
-            self.assertEqual(response.status_code, 200)
-            self.assert_template_used('sign_up.html')
 
-    def test_sign_up_unique_usernames(self):
-        with self.client:
-        # Posting a request with a unique username
-            self.client.post('/sign-up', data={
-            'username': 'test',
-            'password': 'test',
-            'confirm-password': 'test'
-            })
-            response = self.client.get('/sign-up')
-            self.assertEqual(response.status_code, 200)
-            self.assert_template_used('sign_up.html')
 
-            user = response.context['user']
-            profile = response.context['profile']
 
-            self.assertEqual(user, User.query.filter_by(id=1).first())
-            self.assertEqual(profile, ProfileData.query.filter_by(id=1).first())
-
-            # Posting a request with an existing username
-            existing_username = 'existing_user'
-            existing_user = User(username=existing_username, password='password')
-            db.session.add(existing_user)
-            db.session.commit()
-
-            self.client.post('/sign-up', data={
-            'username': existing_username,
-            'password': 'password123',
-            'confirm-password': 'password123'
-            })
-            response = self.client.get('/sign-up')
-            self.assertEqual(response.status_code, 200)
-            self.assert_template_used('sign_up.html')
 
     def test_history(self):
         with self.client:

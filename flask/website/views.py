@@ -128,5 +128,6 @@ def fuel_price_form():
             address_1=profile.address_1,
             price_per_gallon=price_per_gallon
         )
+
     return render_template("fuel_price_form.html", user=current_user, profile=profile, price=None, price_per_gallon=None)
 
