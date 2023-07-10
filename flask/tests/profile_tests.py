@@ -1,9 +1,9 @@
 from flask_testing import TestCase
 from test import WebsiteTest
-from tests import testHash
 from website import db
 from website.models import User, ProfileData
 
+testHash='sha256$tUTxRU3xmVxJzNWE$fee1d05e6f009bb4c4e3aaa5adaeb49ef2b37ce5f7090a62301c97b2fb0b1b21'
 
 class ProfileTests(WebsiteTest):
     def test_complete_profile_post(self):
