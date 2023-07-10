@@ -1,5 +1,7 @@
 # FuelCostCalculator
 
+![Continuous Integration](https://github.com/robertmonopoly/FuelCostCalculator/actions/workflows/ci.yml/badge.svg?branch=main)
+
 ## Running
 
 Assuming you have Python 3.3 or later installed you should create a virtual environment using the `venv` command.
@@ -26,5 +28,6 @@ python tests.py
 
 Coverage reports can be generated like so:
 ```
-coverage run test.py && coverage report -m
+python run_coverage.py
 ```
+The script includes an optional prompt to generate detailed line by line coverage reports

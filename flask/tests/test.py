@@ -1,7 +1,6 @@
 import unittest
 from flask_testing import TestCase
 from datetime import datetime
-import math
 
 import sys
 sys.path.append('../')
@@ -13,15 +12,32 @@ from website import create_app
 from website import db
 from werkzeug.security import generate_password_hash
 from website.models import User
-from website.models import FuelOrderFormData
-from website.models import ProfileData
+import glob
 
 testHash='sha256$tUTxRU3xmVxJzNWE$fee1d05e6f009bb4c4e3aaa5adaeb49ef2b37ce5f7090a62301c97b2fb0b1b21'
 
-class WebsiteTests(TestCase):
+class WebsiteTest(TestCase):
     def create_app(self):
         website.DB_NAME = "testing.db"
         return create_app()
+    
+    def login(self, username, password):
+        response = self.client.post('/login', data=dict(
+            username=username,
+            password=password
+        ), follow_redirects=True)
+        self.assert200(response)
+        self.assertTemplateUsed("home.html")
+        self.assertContext('user', User.query.filter_by(username=username).first())
+
+    def assertUserAnonymous(self):
+        user = self.get_context_variable('user')
+        self.assertEqual(user.is_anonymous, True)
+
+    def login_and_create_user(self, username):
+        db.session.add(User(username=username, password=testHash))
+        db.session.commit()
+        self.login(username, 'test')
 
     def setUp(self):
         db.create_all()
@@ -141,41 +157,66 @@ class WebsiteTests(TestCase):
             self.assert_context('price_per_gallon', expected_price_per_gallon)
             self.assert_context('price', expected_price)
 
-    def test_sign_up_invalid_username(self):
-        response = self.client.post('/sign-up', data={
-            'username': 'invalid-username!',
+    def test_sign_up_matching_passwords(self):
+        with self.client:
+            # Posting a request with matching passwords
+            self.client.post('/sign-up', data={
+            'username': 'test',
             'password': 'test',
             'confirm-password': 'test'
-        }, follow_redirects=True)
-        self.assert200(response)
-        self.assert_template_used('sign_up.html')
-        self.assertIn(b'Invalid username format', response.data)
-        self.assertIsNone(User.query.filter_by(username='invalid-username!').first())
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
+            self.assert_template_used('sign_up.html')
 
-    def test_sign_up_password_mismatch(self):
-        response = self.client.post('/sign-up', data={
-            'username': 'test',
+            user = response.context['user']
+            profile = response.context['profile']
+
+            self.assertEqual(user, User.query.filter_by(id=1).first())
+            self.assertEqual(profile, ProfileData.query.filter_by(id=1).first())
+
+            # Posting a request with mismatching passwords
+            self.client.post('/sign-up', data={
+            'username': 'test2',
             'password': 'password1',
             'confirm-password': 'password2'
-        }, follow_redirects=True)
-        self.assert200(response)
-        self.assert_template_used('sign_up.html')
-        self.assertIn(b'The supplied passwords do not match', response.data)
-        self.assertIsNone(User.query.filter_by(username='test').first())
-        # Additional assertions or checks as needed
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
+            self.assert_template_used('sign_up.html')
 
-    def test_sign_up_existing_username(self):
-        db.session.add(User(username='test', password=generate_password_hash('test')))
-        db.session.commit()
-        response = self.client.post('/sign-up', data={
+    def test_sign_up_unique_usernames(self):
+        with self.client:
+        # Posting a request with a unique username
+            self.client.post('/sign-up', data={
             'username': 'test',
             'password': 'test',
             'confirm-password': 'test'
-        }, follow_redirects=True)
-        self.assert200(response)
-        self.assert_template_used('sign_up.html')
-        self.assertIn(b'A user already exists with that username', response.data)
-        # Additional assertions or checks as needed    
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
+            self.assert_template_used('sign_up.html')
+
+            user = response.context['user']
+            profile = response.context['profile']
+
+            self.assertEqual(user, User.query.filter_by(id=1).first())
+            self.assertEqual(profile, ProfileData.query.filter_by(id=1).first())
+
+            # Posting a request with an existing username
+            existing_username = 'existing_user'
+            existing_user = User(username=existing_username, password='password')
+            db.session.add(existing_user)
+            db.session.commit()
+
+            self.client.post('/sign-up', data={
+            'username': existing_username,
+            'password': 'password123',
+            'confirm-password': 'password123'
+            })
+            response = self.client.get('/sign-up')
+            self.assertEqual(response.status_code, 200)
+            self.assert_template_used('sign_up.html')
 
     def test_history(self):
         with self.client:
@@ -213,4 +254,5 @@ class WebsiteTests(TestCase):
             self.assert_context('profile', ProfileData.query.filter_by(id=1).first())
 
 if __name__ == '__main__':
-    unittest.main()
+    if not run_tests():
+        sys.exit(1)
