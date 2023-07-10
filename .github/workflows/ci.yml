@@ -27,6 +27,7 @@ jobs:
           python test.py
           exit_code=$?
       - name: Run coverage
+        id: coverage
         working-directory: flask/tests
         run: |
           python run_coverage.py headless
@@ -39,5 +40,5 @@ jobs:
       - name: Post coverage results
         uses: peter-evans/commit-comment@v2
         with:
-          body: ${{ steps.run_coverage.outputs.body }}
+          body: ${{ steps.coverage.outputs.body }}
             
