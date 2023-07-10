@@ -1,10 +1,22 @@
-from test import WebsiteTest
-from flask_login.mixins import AnonymousUserMixin
+from test import WebsiteTest, testHash
 
 from website import db
 from website.models import User
 
 class SignupTests(WebsiteTest):
+    def test_sign_up_invalid_username(self):
+        response = self.client.post('/sign-up', data={
+            'username': 'invalid-username!',
+            'password': 'test',
+            'confirm-password': 'test'
+        }, follow_redirects=True)
+
+        self.assert200(response)
+        self.assert_template_used('sign_up.html')
+        self.assertMessageFlashed("""Invalid username format, valid usernames are 3-16 characters 
+            and only include alphanumeric characters""", category='error')
+        self.assertIsNone(User.query.filter_by(username='invalid-username!').first())
+
     def test_sign_up_matching_passwords(self):
         with self.client:
             response = self.client.post('/sign-up', data={
@@ -38,13 +50,13 @@ class SignupTests(WebsiteTest):
 
     def test_sign_up_existing_usernames(self):
         with self.client:
-            db.session.add(User(username='test', password='password'))
+            db.session.add(User(username='test', password=testHash))
             db.session.commit()
 
             response = self.client.post('/sign-up', data={
                 'username': 'test',
-                'password': 'password123',
-                'confirm-password': 'password123'
+                'password': 'test',
+                'confirm-password': 'test'
             })
 
             self.assert200(response)
