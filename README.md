@@ -26,5 +26,6 @@ python tests.py
 
 Coverage reports can be generated like so:
 ```
-coverage run test.py && coverage report -m
+python run_coverage.py
 ```
+The script includes an optional prompt to generate detailed line by line coverage reports
