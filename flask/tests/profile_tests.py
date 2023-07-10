@@ -1,8 +1,9 @@
+from flask_testing import TestCase
 from test import WebsiteTest
-
 from tests import testHash
 from website import db
-from website.models import User , ProfileData
+from website.models import User, ProfileData
+
 
 class ProfileTests(WebsiteTest):
     def test_complete_profile_post(self):
