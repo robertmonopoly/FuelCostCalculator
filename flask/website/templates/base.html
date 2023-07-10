@@ -90,10 +90,11 @@
           <span class="navbar-brand curly-font">Monopoly Bank</span>
           {% if user.is_authenticated %}
               <a class="nav-item nav-link" id="home" href="/">Home</a>
-              {% if not profile or not profile.profile_completed %}
+              {% if not profile or profile == None or not profile.profile_completed %}
                   <a class="nav-item nav-link" id="complete_profile" href="/complete_profile">Complete Profile</a>
-              {% endif %}
+              {% else %}
               <a class="nav-item nav-link" id="fuel_price_form" href="/fuel_price_form">Order Fuel</a>
+              {% endif %}
               <a class="nav-item nav-link" id="view_history" href="/view_history">View History</a>
               <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
           {% else %}

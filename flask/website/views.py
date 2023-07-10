@@ -10,10 +10,7 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET'])
 @login_required
 def home():
-    if current_user.is_authenticated:
-        profile = ProfileData.query.filter_by(id=current_user.id).first()
-    else:
-        profile = None
+    profile = ProfileData.query.filter_by(id=current_user.id).first()
 
     return render_template("home.html", user=current_user, profile=profile)
 
