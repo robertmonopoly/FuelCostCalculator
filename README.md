@@ -1,5 +1,7 @@
 # FuelCostCalculator
 
+![Continuous Integration](https://github.com/robertmonopoly/FuelCostCalculator/actions/workflows/ci.yml/badge.svg?branch=main)
+
 ## Running
 
 Assuming you have Python 3.3 or later installed you should create a virtual environment using the `venv` command.
