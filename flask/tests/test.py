@@ -50,7 +50,8 @@ def run_tests():
     module_strings = [test_file[0:len(test_file)-3] for test_file in test_files]
     suites = [unittest.defaultTestLoader.loadTestsFromName(test_file) for test_file in module_strings]
     test_suite = unittest.TestSuite(suites)
-    unittest.TextTestRunner().run(test_suite)
+    return unittest.TextTestRunner().run(test_suite).wasSuccessful()
 
 if __name__ == '__main__':
-    run_tests()
+    if not run_tests():
+        sys.exit(1)

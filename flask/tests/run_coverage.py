@@ -1,6 +1,6 @@
 import coverage
 from test import run_tests
-import subprocess, os, sys
+import subprocess, os, sys, io
 
 def open_url(url):
     try: # should work on Windows
@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     cov.start()
 
-    run_tests()
+    success = run_tests()
 
     cov.stop()
     cov.save()
@@ -33,4 +33,10 @@ if __name__ == '__main__':
     if not headless and input('View detailed coverage report? (y/n): ') == 'y':
         cov.html_report(directory='tmp/coverage')
         open_url('tmp/coverage/index.html')
+    if headless:
+        cov.report(file=open('tmp/coverage.txt', 'w'), output_format='markdown')
     cov.erase()
+    coverage.xml_report
+
+    if not success:
+        sys.exit(1)

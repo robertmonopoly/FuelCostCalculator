@@ -24,8 +24,17 @@ jobs:
       - name: Run tests
         working-directory: flask/tests
         run: |
-          set -e
           python test.py
+          exit_code=$?
       - name: Run coverage
         working-directory: flask/tests
-        run: python run_coverage.py headless
+        run: |
+          python run_coverage.py headless
+          body="$(cat tmp/coverage.txt)"
+          echo "# Coverage Report" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+      - name: Post coverage results
+        uses: peter-evans/commit-comment@v2
+        with:
+          body: ${{ steps.run_coverage.outputs.body }}
+            
