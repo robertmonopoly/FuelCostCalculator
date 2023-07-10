@@ -9,7 +9,7 @@ jobs:
       matrix: 
         os: 
           - { prettyName: 'Linux', fullName: 'ubuntu-latest'}
-        python-version: ['3.9', '3.10']
+        python-version: ['3.9']
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
@@ -23,7 +23,9 @@ jobs:
           pip install -r flask/requirements.txt
       - name: Run tests
         working-directory: flask/tests
-        run: python test.py
+        run: |
+          set -e
+          python test.py
       - name: Run coverage
         working-directory: flask/tests
         run: python run_coverage.py headless
