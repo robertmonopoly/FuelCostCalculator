@@ -28,7 +28,7 @@
             <th scope="row">{{ order.delivery_date }}</th>
             <th scope="row">{{ order.gallons }}</th>
             <th scope="row">{{ order.address_1 }} {{ order.city }}, {{ order.state }} {{ order.zip_code }}</th>
-            <th scope="row">${{ order.price }}</th>
+            <th scope="row">${{ '{:.2f}'.format(order.price) }}</th>
 
         </tr>
         {% endfor %}

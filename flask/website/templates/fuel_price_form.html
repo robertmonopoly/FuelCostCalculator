@@ -68,12 +68,12 @@
 
   <div>
     <h2 align="center">Suggested Price Per Gallon:</h2>
-    <p align="center">${{ price_per_gallon }}</p>
+    <p align="center">${{ '{:.2f}'.format(price_per_gallon) }}</p>
   </div>
 
   <div>
     <h2 align="center">Total Amount Due:</h2>
-    <p align="center">${{ price }}</p>
+    <p align="center">${{ '{:.2f}'.format(price) }}</p>
   </div>
 
   <a href="/view_history" class="btn btn-primary" role="button">View My Orders</a>
