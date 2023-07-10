@@ -27,18 +27,6 @@ jobs:
           python test.py
           exit_code=$?
       - name: Run coverage
-        id: coverage
         working-directory: flask/tests
-        run: |
-          python run_coverage.py headless
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          body="$(cat tmp/coverage.txt)"
-          echo "body<<$EOF" >> $GITHUB_OUTPUT
-          echo "# Coverage Report" >> $GITHUB_OUTPUT
-          echo "$body" >> $GITHUB_OUTPUT
-          echo "$EOF" >> $GITHUB_OUTPUT
-      - name: Post coverage results
-        uses: peter-evans/commit-comment@v2
-        with:
-          body: ${{ steps.coverage.outputs.body }}
+        run: python run_coverage.py headless
             
