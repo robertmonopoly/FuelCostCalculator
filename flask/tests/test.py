@@ -2,8 +2,10 @@ import unittest
 from flask_testing import TestCase
 from datetime import datetime
 
+import os
 import sys
-sys.path.append('../')
+curPath = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+sys.path.append(os.path.join(curPath, "../"))
 
 # Used to modify db name
 import website
@@ -46,6 +48,7 @@ class WebsiteTest(TestCase):
         db.drop_all()
 
 def run_tests():
+    os.chdir(curPath)
     test_files = glob.glob('*_tests.py')
     module_strings = [test_file[0:len(test_file)-3] for test_file in test_files]
     suites = [unittest.defaultTestLoader.loadTestsFromName(test_file) for test_file in module_strings]
