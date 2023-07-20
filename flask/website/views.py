@@ -28,7 +28,29 @@ def complete_profile():
         state = request.form['state']
         zip_code = request.form['zip_code']
 
-        # TODO: Add server-side validation for the form fields
+        # Server-side input validation
+        errors = []
+
+        if not full_name:
+            errors.append("Full name is required.")
+
+        if not address_1:
+            errors.append("Address line 1 is required.")
+
+        if not city:
+            errors.append("City is required.")
+
+        if not state:
+            errors.append("State is required.")
+
+        if not zip_code:
+            errors.append("ZIP code is required.")
+
+        if errors:
+            # If there are validation errors, render the template again with the errors.
+            return render_template("complete_profile.html", user=current_user, profile=profile, errors=errors)
+
+        # If there are no validation errors, update the profile and commit the changes.
         in_state_status = (state == "TX")
 
         if profile is None:
@@ -47,7 +69,7 @@ def complete_profile():
         db.session.commit()
         flash("Profile completed successfully!")
 
-        return redirect(url_for('views.complete_profile'))
+        return redirect(url_for('views.home'))
 
     return render_template("complete_profile.html", user=current_user, profile=profile)
 
