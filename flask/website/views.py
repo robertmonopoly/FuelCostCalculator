@@ -97,7 +97,7 @@ def fuel_price_form():
         price = None  # Initialize the price variable
         gallons = float(request.form['gallons_requested'])  # Convert to float
         if gallons < 1:
-            flash("Gallons requested must be greater than 1!", category="error")
+            flash("Gallons requested must be greater than or equal to 1!", category="error")
             return render_template("fuel_price_form.html", user=current_user, profile=profile, price=price, price_per_gallon=None)
         delivery_date = request.form['delivery_date']
 
