@@ -13,7 +13,7 @@
 {% if price == None %}
 
 <h1 align="center">Fuel Order Form</h1>
-<form method="POST" action="{{ url_for('views.fuel_price_form') }}">
+<form method="POST" onsubmit="return validateForm()" action="{{ url_for('views.fuel_price_form') }}">
   <div class="form-group">
     <label class="form-label required" for="gallons_requested">Gallons Requested:</label>
     <input class="form-control" type="number" id="gallons_requested" name="gallons_requested" min="1" required>
@@ -52,6 +52,23 @@
   <div class="text-center">
     <button type="submit" class="btn btn-primary btn-block">Submit order</button>
   </div>
+  <script>
+    function validateForm() {
+      const deliveryDateInput = document.getElementById('delivery_date');
+      const deliveryDate = new Date(deliveryDateInput.value);
+  
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+  
+      if (deliveryDate < currentDate) {
+        alert('Error: Delivery date cannot be in the past.');
+        deliveryDateInput.value = '';
+        return false;
+      }
+  
+      return true;
+    }
+  </script>
 </form>
 
 {% endif %}
