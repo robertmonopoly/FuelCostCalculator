@@ -20,11 +20,7 @@ def login():
             return render_template("login.html", user=current_user)
 
         user = User.query.filter_by(username=username).first()
-        if not user:
-            flash('Invalid credentials', category='error')
-            return render_template("login.html", user=current_user)
-        
-        if not check_password_hash(user.password, password):
+        if not user or not check_password_hash(user.password, password):
             flash('Invalid credentials', category='error')
             return render_template("login.html", user=current_user)
         

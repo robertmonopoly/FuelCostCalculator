@@ -17,7 +17,7 @@ class LoginTests(WebsiteTest):
             db.session.commit()
             loginResponse = self.client.post('login', data={'username': 'test', 'password': 'test2'})
             self.assert200(loginResponse)
-            self.assert_message_flashed('Invalid credentials, try again.', category='error')
+            self.assert_message_flashed('Invalid credentials', category='error')
             self.assert_template_used('login.html')
 
     def test_login_when_credentials_valid(self):
