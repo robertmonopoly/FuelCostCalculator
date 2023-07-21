@@ -14,16 +14,22 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user = User.query.filter_by(username=username).first()
-        if user:
-            if check_password_hash(user.password, password):
-                login_user(user, remember=True)
-                return redirect(url_for('views.home'))
-            else:
-                flash('Invalid credentials, try again.', category='error')
-        else:
-            flash('Invalid credentials', category='error')
+        if not re.match("^[a-zA-Z0-9]{3,16}$", username):
+            flash("""Invalid username format, valid usernames are 3-16 characters 
+            and only include alphanumeric characters""", category='error')
+            return render_template("login.html", user=current_user)
 
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            flash('Invalid credentials', category='error')
+            return render_template("login.html", user=current_user)
+        
+        if not check_password_hash(user.password, password):
+            flash('Invalid credentials', category='error')
+            return render_template("login.html", user=current_user)
+        
+        login_user(user, remember=True)
+        return redirect(url_for('views.home'))
     return render_template("login.html", user=current_user)
 
 
