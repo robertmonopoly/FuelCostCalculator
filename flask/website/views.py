@@ -80,14 +80,6 @@ def view_history():
     orders = FuelOrderFormData.query.filter_by(user_id=current_user.id).all()
     return render_template("view_history.html", user=current_user, profile=profile, orders=orders)
 
-
-def validate_delivery_date(delivery_date):
-    delivery_date = datetime.datetime.strptime(delivery_date, '%Y-%m-%d').date()
-    current_date = datetime.date.today()
-
-    if delivery_date < current_date:
-        print("Delivery date cannot be in the past.")
-
 @views.route('/fuel_price_form', methods=['GET', 'POST'])
 @login_required
 def fuel_price_form():
@@ -99,11 +91,14 @@ def fuel_price_form():
         if gallons < 1:
             flash("Gallons requested must be greater than or equal to 1!", category="error")
             return render_template("fuel_price_form.html", user=current_user, profile=profile, price=price, price_per_gallon=None)
+        
         delivery_date = request.form['delivery_date']
 
-        validate_delivery_date(delivery_date)
-
         delivery_date = datetime.datetime.strptime(delivery_date, '%Y-%m-%d').date()
+
+        if(delivery_date < datetime.date.today()):
+            flash("Delivery date cannot be in the past!", category="error")
+            return render_template("fuel_price_form.html", user=current_user, profile=profile, price=price, price_per_gallon=None)
         
         is_new_customer = FuelOrderFormData.query.filter_by(user_id=current_user.id).first() is None
 
