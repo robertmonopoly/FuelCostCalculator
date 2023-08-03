@@ -84,10 +84,12 @@ def view_history():
 @login_required
 def fuel_price_form():
     profile = ProfileData.query.filter_by(id=current_user.id).first()
+    orders = FuelOrderFormData.query.filter_by(user_id=current_user.id).all()
+    form_type = request.form.get('form_type')
 
     if request.method == 'POST':
-        price = None  # Initialize the price variable
-        gallons = float(request.form['gallons_requested'])  # Convert to float
+        price = None  
+        gallons = float(request.form['gallons_requested']) 
         if gallons < 1:
             flash("Gallons requested must be greater than or equal to 1!", category="error")
             return render_template("fuel_price_form.html", user=current_user, profile=profile, price=price, price_per_gallon=None)
@@ -122,7 +124,6 @@ def fuel_price_form():
 
         company_profit_margin = current_price * (location_factor - history_factor + requested_factor + profit_factor)
 
-
         price_per_gallon = current_price + company_profit_margin
         price = gallons * price_per_gallon
 
@@ -138,10 +139,8 @@ def fuel_price_form():
             user=current_user
         )
 
-        db.session.add(fuel_order_form_data)
-        db.session.commit()
-
-        return render_template(
+        if form_type == 'fuel_order':
+            return render_template(
             "fuel_price_form.html",
             user=current_user,
             profile=profile,
@@ -149,6 +148,12 @@ def fuel_price_form():
             address_1=profile.address_1,
             price_per_gallon=price_per_gallon
         )
+        elif form_type == 'quote_information':
+            db.session.add(fuel_order_form_data)
+            db.session.commit()
+            flash("Fuel order placed successfully!", category="success")
+            return redirect(url_for('views.view_history'))
 
     return render_template("fuel_price_form.html", user=current_user, profile=profile, price=None, price_per_gallon=None)
+
 

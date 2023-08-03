@@ -48,9 +48,10 @@
       <input class="form-control" value="{{ price if price != None else 'TBD'}}" readonly>
     </div>
   </div>
+  <input type="hidden" name="form_type" value="fuel_order">
 
   <div class="text-center">
-    <button type="submit" class="btn btn-primary btn-block">Submit order</button>
+    <button type="submit" class="btn btn-primary btn-block">Get Quote</button>
   </div>
   <script>
     function validateForm() {
@@ -65,7 +66,6 @@
         deliveryDateInput.value = '';
         return false;
       }
-  
       return true;
     }
   </script>
@@ -76,24 +76,36 @@
 {% if price != None %}
 
 <div class="container text-center">
-  <h1 align="center">Fuel ordered successfully</h1>
+  <h1 align="center">Quote Information</h1>
   <hr class="mt-2 mb-2">
-  <div>
-    <h2 align="center">Delivery Address:</h2>
-    <p align="center">{{ address_1 }}</p>
-  </div>
+  <form id="confirmationForm" method="POST" action="{{ url_for('views.fuel_price_form') }}">
+    <div>
+      <h2 align="center">Delivery Address:</h2>
+      <p align="center">{{ address_1 }}</p>
+    </div>
 
-  <div>
-    <h2 align="center">Suggested Price Per Gallon:</h2>
-    <p align="center">${{ '{:.2f}'.format(price_per_gallon) }}</p>
-  </div>
+    <div>
+      <h2 align="center">Suggested Price Per Gallon:</h2>
+      <p align="center">${{ '{:.2f}'.format(price_per_gallon) }}</p>
+    </div>
 
-  <div>
-    <h2 align="center">Total Amount Due:</h2>
-    <p align="center">${{ '{:.2f}'.format(price) }}</p>
-  </div>
+    <div>
+      <h2 align="center">Total Amount Due:</h2>
+      <p align="center">${{ '{:.2f}'.format(price) }}</p>
+    </div>
 
-  <a href="/view_history" class="btn btn-primary" role="button">View My Orders</a>
+    <input type="hidden" name="address" value="{{ address_1 }}">
+    <input type="hidden" name="price_per_gallon" value="{{ price_per_gallon }}">
+    <input type="hidden" name="price" value="{{ price }}">
+
+    <input type="hidden" name="gallons_requested" value="{{ request.form['gallons_requested'] }}">
+    <input type="hidden" name="delivery_date" value="{{ request.form['delivery_date'] }}">
+
+    <input type="hidden" name="form_type" value="quote_information">
+
+    <a href="/fuel_price_form" class="btn btn-primary" role="button">Back</a>
+    <button type="submit" class="btn btn-primary" id="confirmBtn">Submit</button>
+  </form>
 
 </div>
 
