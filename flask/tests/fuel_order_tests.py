@@ -60,7 +60,8 @@ class FuelOrderTest(WebsiteTest):
             # POST request to the '/fuel_price_form' route
             response = self.client.post('/fuel_price_form', data={
                 'gallons_requested': '1500',  # Set the desired gallons
-                'delivery_date': '2023-12-09'  # Set the delivery date
+                'delivery_date': '2023-12-09',  # Set the delivery date
+                'form_type': 'fuel_order'
             })
 
             self.assert_context('address_1', ProfileData.query.filter_by(id=1).first().address_1)

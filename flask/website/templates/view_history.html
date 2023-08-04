@@ -16,6 +16,7 @@
             <tr>
                 <th scope="col">Order #</th>
                 <th scope="col">Delivery date</th>
+                <th scope="col">Price per Gallon</th>
                 <th scope="col">Gallons</th>
                 <th scope="col">Address</th>
                 <th scope="col">Price</th>
@@ -26,6 +27,7 @@
         <tr>
             <th scope="row">{{ order.id }}</th>
             <th scope="row">{{ order.delivery_date }}</th>
+            <th scope="row">{{ '{:.2f}'.format(order.price / order.gallons) }}</th>
             <th scope="row">{{ order.gallons }}</th>
             <th scope="row">{{ order.address_1 }} {{ order.city }}, {{ order.state }} {{ order.zip_code }}</th>
             <th scope="row">${{ '{:.2f}'.format(order.price) }}</th>
